@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "clicker",
+      "runtimeExecutable": "py",
+      "runtimeArgs": ["-3", "-I", "-m", "http.server", "8757"],
+      "port": 8757
+    }
+  ]
+}
