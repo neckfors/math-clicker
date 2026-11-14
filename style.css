@@ -168,22 +168,23 @@ a { color: #ffd84a; }
 }
 
 /* Fuel tank gauge (shown once you own a robot) */
-.tank { display: flex; align-items: center; gap: 8px; width: min(320px, 90%); margin: 6px auto 0; font-size: 13px; }
+.tank { position: absolute; left: calc(100% + 10px); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; }
 .tank[hidden] { display: none; }
-.tank .cell { flex: 1; height: 22px; border: 2px solid #ffffff60; border-radius: 6px; background: #00000040; position: relative; overflow: hidden; }
-.tank .cell i { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: linear-gradient(#ffd45f, #ff9a3c); transition: width .25s; }
+.tank .cell { width: 24px; height: 110px; border: 2px solid #ffffff60; border-radius: 6px; background: #00000040; position: relative; overflow: hidden; }
+.tank .cell i { position: absolute; left: 0; right: 0; bottom: 0; height: 0; background: linear-gradient(#ffd45f, #ff9a3c); transition: height .25s; }
+.rnote { text-align: center; font-size: 14px; font-weight: 600; margin: 6px 0 0; }
+.rnote[hidden] { display: none; }
+.rnote.empty { color: #ff8a7a; animation: tankpulse .8s infinite; }
 .tank .cell i.low { background: linear-gradient(#ff8a7a, #e0443a); animation: tankpulse .8s infinite; }
 .tank .cell i.fill { animation: tankfill .5s; }
-.tank .cell::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent 0 9px, #00000050 9px 10px); }
-.tank b { min-width: 72px; text-align: right; font-weight: 600; }
+.tank .cell::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent 0 9px, #00000050 9px 10px); }
+.tank b { text-align: center; font-weight: 600; white-space: nowrap; }
 @keyframes tankpulse { 50% { opacity: .5; } }
 @keyframes tankfill { 0% { filter: brightness(2.2); } 100% { filter: none; } }
 
 /* Robot helper beside the rocket */
 .tap { position: relative; }
-.tank > span, .tank > b { width: 64px; min-width: 64px; flex: none; }
 .rwrap { position: relative; }
-.tank > span { text-align: left; }
 .robot { position: absolute; top: 50%; margin-top: -20px; right: calc(100% + 8px); font-size: 40px; line-height: 1; pointer-events: none; filter: grayscale(1) brightness(.6); transition: filter .3s; }
 .robot[hidden] { display: none; }
 .robot.work { filter: none; animation: robotwork .5s ease-in-out infinite; }

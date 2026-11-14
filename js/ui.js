@@ -269,7 +269,7 @@ function buildUpgrades() {
 const upNow = {
   tap: () => `Now: ${fmt(G.perTap())} coins per tap`,
   bonus: () => `Now: one answer = ${60 + 15 * s.levels.bonus} taps`,
-  auto: () => `Now: ${s.levels.auto / 2} taps per second (+${fmt(G.autoPerSec())} 🪙/s)`,
+  auto: () => `Now: ${s.levels.auto} taps per second (+${fmt(G.autoPerSec())} 🪙/s)`,
   fuel: () => `Now: +${G.fuelPerAnswer()}s per answer, tank ${G.maxFuel()}s`,
 };
 function renderUpgrades() {
@@ -322,20 +322,17 @@ let lastFuel = s.fuel,lastRobotCoin = 0;
 function render() {
   const z = G.quiz;
   $('coins').textContent = '🪙 ' + fmt(s.coins);
-  let rates = `+${fmt(G.perTap())} per tap`;
+  $('rates').textContent = `+${fmt(G.perTap())} per tap`;
+  const tank = $('tank'), tf = $('tankFill'), note = $('robotNote');
+  tank.hidden = !s.levels.auto || !!z || dying;
+  note.hidden = tank.hidden;
   if (s.levels.auto) {
-    rates += s.fuel > 0
-      ? ` · 🤖 +${fmt(G.autoPerSec())}/s · ⛽ ${Math.ceil(s.fuel)}s`
-      : ' · 🤖 no fuel: answer to refuel';
-  }
-  $('rates').textContent = rates;
-  const tank = $('tank'), tf = $('tankFill');
-  tank.hidden = !s.levels.auto;
-  if (s.levels.auto) {
+    note.classList.toggle('empty', s.fuel <= 0);
+    note.textContent = s.fuel > 0 ? `🤖 +${fmt(G.autoPerSec())} 🪙/s` : '🤖 No fuel: answer a question to refuel';
     const pct = 100 * s.fuel / G.maxFuel();
-    tf.style.width = pct + '%';
+    tf.style.height = pct + '%';
     tf.classList.toggle('low', s.fuel < 5);
-    $('tankText').textContent = s.fuel > 0 ? `${Math.ceil(s.fuel)} / ${G.maxFuel()}s` : 'EMPTY';
+    $('tankText').textContent = s.fuel > 0 ? `${Math.ceil(s.fuel)}s` : 'EMPTY';
     if (s.fuel > lastFuel + 0.5) { tf.classList.remove('fill'); void tf.offsetWidth; tf.classList.add('fill'); FX.sfx.refuel(); }
     if (lastFuel >= 5 && s.fuel < 5 && s.fuel > 0) FX.sfx.low();
     if (lastFuel > 0 && s.fuel <= 0) FX.sfx.empty();
