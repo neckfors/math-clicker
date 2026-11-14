@@ -17,7 +17,7 @@ export const UPGRADES = [
   { id: 'bonus', icon: '🧠', name: 'Maths bonus', base: 50, growth: 1.8,
     desc: 'Each correct answer is worth more taps.' },
   { id: 'auto', icon: '🤖', name: 'Robot helper', base: 100, growth: 1.6,
-    desc: 'Taps once per second for you, while there is fuel.' },
+    desc: 'A quarter-tap per second for you, while there is fuel.' },
   { id: 'fuel', icon: '🛢️', name: 'Bigger fuel tank', base: 150, growth: 1.8,
     desc: 'A little more robot fuel per answer, and a bigger tank.' },
 ];

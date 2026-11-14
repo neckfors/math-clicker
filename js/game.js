@@ -26,10 +26,11 @@ export const s = load();
 export const save = () => { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch { /* storage off */ } };
 
 // ---- Derived values ----
+const BASE_MATH = 60; // one right answer = 60 taps, so maths always beats tapping
 export const perTap = () => Math.ceil(1.5 ** s.levels.tap) * (1 + s.stars);
 export const streakMult = (streak = s.streak) => Math.min(5, 1 + Math.floor(streak / 5));
-export const mathReward = (streak = s.streak) => perTap() * (20 + 5 * s.levels.bonus) * streakMult(streak);
-export const autoPerSec = () => s.levels.auto * perTap();
+export const mathReward = (streak = s.streak) => perTap() * (BASE_MATH + 15 * s.levels.bonus) * streakMult(streak);
+export const autoPerSec = () => 0.25 * s.levels.auto * perTap();
 export const maxFuel = () => 20 + 5 * s.levels.fuel;
 export const fuelPerAnswer = () => 3 + s.levels.fuel;
 export const stageCost = () => STAGES[s.stage].cost * 3 ** s.stars;
