@@ -269,7 +269,7 @@ function buildUpgrades() {
 const upNow = {
   tap: () => `Now: ${fmt(G.perTap())} coins per tap`,
   bonus: () => `Now: one answer = ${60 + 15 * s.levels.bonus} taps`,
-  auto: () => `Now: ${s.levels.auto} taps per second`,
+  auto: () => `Now: ${s.levels.auto / 4} taps per second (+${fmt(G.autoPerSec())} 🪙/s)`,
   fuel: () => `Now: +${G.fuelPerAnswer()}s per answer, tank ${G.maxFuel()}s`,
 };
 function renderUpgrades() {
