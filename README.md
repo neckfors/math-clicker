@@ -19,9 +19,18 @@ times tables (2–9) for big bonuses, buy upgrades and build a rocket to the Moo
 - **Stats**: a times-table grid shows which questions you know and which to practise. Questions you
   get wrong come up more often. 15 achievements to collect.
 
+- **Sounds and effects**: a chime that climbs with your streak, flying coins, a bonus banner and
+  vibration. Turn them off under Stats → Settings.
+
 Progress is saved on the device.
 
-## Run it
+## Play
+
+https://neckfors.github.io/math-clicker/
+
+On an Android phone, open the link in Chrome and choose "Add to Home screen" to install it.
+
+## Run it locally
 
 It is a plain web app with no build step. Serve the folder and open it in a browser:
 
@@ -29,8 +38,7 @@ It is a plain web app with no build step. Serve the folder and open it in a brow
 py -3 -m http.server 8757
 ```
 
-Then open http://localhost:8757. Served over HTTPS (for example GitHub Pages) it can be installed
-on an Android phone from Chrome's menu ("Add to Home screen") and works offline.
+Then open http://localhost:8757.
 
 ## Files
 
@@ -40,6 +48,7 @@ on an Android phone from Chrome's menu ("Add to Home screen") and works offline.
 | `js/data.js` | Rocket stages, upgrades, achievements (tune prices here) |
 | `js/game.js` | Game rules and saving |
 | `js/ui.js` | Screens, input, game loop |
+| `js/fx.js` | Sounds, vibration, flying coins |
 | `js/update.js`, `sw.js` | Offline support and the "New version available" bar |
 
 When releasing a change, bump `VERSION` in `sw.js`. The version is shown under Stats → About.

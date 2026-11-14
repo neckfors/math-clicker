@@ -92,6 +92,12 @@ button { font: inherit; color: inherit; border: 0; cursor: pointer; touch-action
 /* Stats */
 .wide { width: 100%; background: #ffd84a; color: #0b1030; font-weight: 800; border-radius: 12px; padding: 12px; }
 .wide:disabled { background: #ffffff22; color: #fff; font-weight: 400; }
+.wide.plain { background: #ffffff22; color: #fff; }
+.coinfx { position: fixed; left: 0; top: 0; z-index: 15; pointer-events: none; font-size: 22px; }
+.banner {
+  position: fixed; left: 50%; top: 38%; z-index: 16; pointer-events: none; white-space: nowrap;
+  font-size: 40px; font-weight: 900; color: #ffd84a; text-shadow: 0 3px 0 #b3541e, 0 0 24px #ff8a3c;
+}
 .wide.danger { background: #ff6b6b44; color: #fff; margin-top: 12px; }
 .summary { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .summary div { background: #ffffff14; border-radius: 10px; padding: 8px 10px; font-size: 13px; }

@@ -11,7 +11,7 @@ const runFields = () => ({
 // Fields that are kept forever.
 const keepFields = () => ({
   stars: 0, bestTimes: {}, stats: {}, right: 0, wrong: 0, taps: 0,
-  bestStreak: 0, bossPerfect: false, ach: [], daily: null, dailyBest: 0,
+  bestStreak: 0, bossPerfect: false, ach: [], daily: null, dailyBest: 0, sound: true,
 });
 
 function load() {

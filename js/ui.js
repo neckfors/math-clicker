@@ -2,6 +2,7 @@
 import * as G from './game.js';
 import { STAGES, UPGRADES, ACHIEVEMENTS } from './data.js';
 import { getVersion } from './update.js';
+import * as FX from './fx.js';
 
 const $ = id => document.getElementById(id);
 const s = G.s;
@@ -56,9 +57,23 @@ function press(k) {
 
 function submit() {
   if (!entry) return;
-  const wasQuiz = !!G.quiz;
+  const wasQuiz = !!G.quiz, multBefore = G.streakMult();
   const res = G.answer(Number(entry));
   entry = '';
+  if (res.ok) {
+    FX.sfx.correct(wasQuiz ? (G.quiz ? G.quiz.done : 10) : s.streak);
+    FX.pop($('mathCard'));
+    FX.buzz(15);
+    if (res.reward) FX.coinBurst($('qEntry'), $('coins'), 4 + 2 * G.streakMult());
+    if (!wasQuiz && G.streakMult() > multBefore) {
+      FX.sfx.milestone();
+      FX.banner(`🔥 Bonus x${G.streakMult()}!`);
+    }
+  } else {
+    FX.sfx.wrong();
+    FX.shake($('mathCard'));
+    FX.buzz([60, 40, 60]);
+  }
   fb = res.ok
     ? { ok: true, text: res.reward ? `+${fmt(res.reward)} 🪙` : 'Correct!', until: Date.now() + 700 }
     : { ok: false, text: `${res.a} × ${res.b} = ${res.a * res.b}`, until: Date.now() + (wasQuiz ? 900 : 1500) };
@@ -105,6 +120,9 @@ function showWin() {
 }
 
 function onQuizEnd(end) {
+  if (end.won) FX.sfx.win();
+  else if (end.type === 'daily' || end.success) FX.sfx.fanfare();
+  else FX.sfx.wrong();
   if (end.type === 'daily') {
     showDialog('📅 Daily challenge done',
       `${end.right} of ${end.total} correct in ${fmtTime(end.time)}.\nReward: +${fmt(end.reward)} 🪙`, [{ label: 'OK' }]);
@@ -136,7 +154,7 @@ function buildUpgrades() {
     row.innerHTML = `<span class="ico">${u.icon}</span>
       <span class="info"><b>${u.name} <i data-f="lvl"></i></b><small>${u.desc}</small><small data-f="now"></small></span>
       <span class="cost" data-f="cost"></span>`;
-    row.onclick = () => { if (G.buy(u.id)) render(); };
+    row.onclick = () => { if (G.buy(u.id)) { FX.sfx.buy(); FX.pop(row, 1.03); render(); } };
     $('upList').appendChild(row);
     upRows[u.id] = row;
   }
@@ -236,6 +254,7 @@ function render() {
 $('rocket').addEventListener('pointerdown', e => {
   const got = G.tap();
   if (!got) return;
+  FX.sfx.tap();
   const el = document.createElement('span');
   el.className = 'float';
   el.textContent = '+' + fmt(got);
@@ -262,6 +281,14 @@ $('restartBtn').addEventListener('click', () => {
   showDialog('Restart this flight?', 'Coins, upgrades and rocket parts start over.\nStars, stats and achievements are kept.',
     [{ label: 'Cancel' }, { label: 'Restart', fn: () => { G.restartRun(); setView('play'); } }]);
 });
+const renderSound = () => { $('soundBtn').textContent = s.sound ? '🔊 Sound and vibration: on' : '🔇 Sound and vibration: off'; };
+$('soundBtn').addEventListener('click', () => {
+  s.sound = !s.sound;
+  G.save();
+  renderSound();
+  FX.sfx.buy();
+});
+renderSound();
 document.addEventListener('visibilitychange', () => { if (document.hidden) G.save(); });
 
 // ---- Start ----
