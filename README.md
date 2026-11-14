@@ -58,6 +58,8 @@ Then open http://localhost:8757.
 | `js/stars.js` | Animated star field in the background |
 | `js/update.js`, `sw.js` | Offline support and the "New version available" bar |
 
+Credits: shown under Stats → About ("Made by me and my son Ben").
+
 When releasing a change, bump `VERSION` in `sw.js`. The version is shown under Stats → About.
 
 ## Support
