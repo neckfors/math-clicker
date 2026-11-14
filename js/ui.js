@@ -81,7 +81,7 @@ function submit() {
     if (wasBoss) bossLunge();
   }
   fb = res.ok
-    ? { ok: true, text: res.reward ? `+${fmt(res.reward)} 🪙` : 'Correct!', until: Date.now() + 700 }
+    ? { ok: true, text: res.reward ? `+${fmt(res.reward)} 🪙` + (s.levels.auto ? ` +${G.fuelPerAnswer()}s ⛽` : '') : 'Correct!', until: Date.now() + 700 }
     : { ok: false, text: `${res.a} × ${res.b} = ${res.a * res.b}`, until: Date.now() + (wasQuiz ? 900 : 1500) };
   if (res.end) onQuizEnd(res.end);
   render();
@@ -101,7 +101,7 @@ function renderQuestion() {
   $('qText').textContent = `${G.q.a} × ${G.q.b} =`;
   $('qEntry').hidden = false;
   $('qEntry').textContent = entry || '?';
-  $('qReward').textContent = active ? fb.text : G.quiz ? '' : `+${fmt(G.mathReward(s.streak + 1))} 🪙`;
+  $('qReward').textContent = active ? fb.text : G.quiz ? '' : `+${fmt(G.mathReward(s.streak + 1))} 🪙` + (s.levels.auto ? ` +${G.fuelPerAnswer()}s ⛽` : '');
 }
 
 // ---- Quiz rounds ----
@@ -318,6 +318,7 @@ function renderStats() {
 }
 
 // ---- Main render (cheap, runs 10 times per second) ----
+let lastFuel = 0;
 function render() {
   const z = G.quiz;
   $('coins').textContent = '🪙 ' + fmt(s.coins);
@@ -328,6 +329,16 @@ function render() {
       : ' · 🤖 no fuel: answer to refuel';
   }
   $('rates').textContent = rates;
+  const tank = $('tank'), tf = $('tankFill');
+  tank.hidden = !s.levels.auto;
+  if (s.levels.auto) {
+    const pct = 100 * s.fuel / G.maxFuel();
+    tf.style.width = pct + '%';
+    tf.classList.toggle('low', s.fuel < 5);
+    $('tankText').textContent = s.fuel > 0 ? `${Math.ceil(s.fuel)} / ${G.maxFuel()}s` : 'EMPTY';
+    if (s.fuel > lastFuel + 0.5) { tf.classList.remove('fill'); void tf.offsetWidth; tf.classList.add('fill'); }
+    lastFuel = s.fuel;
+  }
   $('streak').textContent = `🔥 ${s.streak} in a row`;
   $('mult').textContent = `bonus x${G.streakMult()}` + (s.stars ? ` · ⭐ ${s.stars}` : '');
 
