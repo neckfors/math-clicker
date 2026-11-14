@@ -1,5 +1,5 @@
 // Bump VERSION on every release so players get the "New version available" bar.
-const VERSION = '1.3.1';
+const VERSION = '1.3.2';
 const CACHE = 'math-clicker-' + VERSION;
 const FILES = [
   './', 'index.html', 'style.css', 'manifest.json',

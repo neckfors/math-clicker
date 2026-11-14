@@ -318,7 +318,7 @@ function renderStats() {
 }
 
 // ---- Main render (cheap, runs 10 times per second) ----
-let lastFuel = 0;
+let lastFuel = s.fuel,lastRobotCoin = 0;
 function render() {
   const z = G.quiz;
   $('coins').textContent = '🪙 ' + fmt(s.coins);
@@ -336,8 +336,17 @@ function render() {
     tf.style.width = pct + '%';
     tf.classList.toggle('low', s.fuel < 5);
     $('tankText').textContent = s.fuel > 0 ? `${Math.ceil(s.fuel)} / ${G.maxFuel()}s` : 'EMPTY';
-    if (s.fuel > lastFuel + 0.5) { tf.classList.remove('fill'); void tf.offsetWidth; tf.classList.add('fill'); }
+    if (s.fuel > lastFuel + 0.5) { tf.classList.remove('fill'); void tf.offsetWidth; tf.classList.add('fill'); FX.sfx.refuel(); }
     lastFuel = s.fuel;
+  }
+  const rb = $('robot'), working = !!s.levels.auto && s.fuel > 0 && !G.quiz && !s.won;
+  rb.hidden = !s.levels.auto || !!z || dying;
+  rb.classList.toggle('work', working);
+  rb.classList.toggle('idle', !!s.levels.auto && s.fuel <= 0);
+  if (working && Date.now() - lastRobotCoin > 1000) {
+    lastRobotCoin = Date.now();
+    const r = rb.getBoundingClientRect();
+    FX.burst(r.left + r.width / 2, r.top, ['🪙'], 1, 40, 20);
   }
   $('streak').textContent = `🔥 ${s.streak} in a row`;
   $('mult').textContent = `bonus x${G.streakMult()}` + (s.stars ? ` · ⭐ ${s.stars}` : '');

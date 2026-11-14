@@ -12,7 +12,8 @@ times tables (2–9) for big bonuses, buy upgrades and build a rocket to the Moo
 - **Upgrades**: stronger taps, a bigger maths bonus, robot helpers that tap for you, and a bigger
   fuel tank. Robots only run on fuel, and fuel only comes from correct answers (a few seconds each,
   so maths stays the main way to earn). Once you own a robot, a fuel tank gauge appears above the answer
-  pad, the answer card shows "+Ns ⛽", and the gauge flashes when a right answer refuels it. One right answer is worth 60+ taps and robots give only a quarter-tap per second per level, so solving maths always beats tapping.
+  pad, the answer card shows "+Ns ⛽", and the gauge flashes (with a glugging sound) when a right answer refuels it. The robot stands beside the
+  rocket: it works with a wrench and drops coins while fuelled, and sleeps (💤) when the tank is empty. One right answer is worth 60+ taps and robots give only a quarter-tap per second per level, so solving maths always beats tapping.
 - **Goal**: build 7 rocket parts. Each part costs coins and a **boss round**: 10 correct answers
   before the timer runs out (a wrong answer costs 3 seconds). A boss (7 different ones, cooler each
   level) flies towards your rocket; every right answer shoots it, and the last one blows it up.
