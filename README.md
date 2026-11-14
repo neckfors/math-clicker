@@ -19,7 +19,7 @@ times tables (2–9) for big bonuses, buy upgrades and build a rocket to the Moo
   has a moving star field.
 - **Replay**: reaching the Moon gives a star. Each star makes coins worth more, the next rocket
   more expensive and boss rounds shorter. Best time is saved per star level.
-- **Daily challenge**: 20 questions, one try per day, coins for every correct answer.
+- **Daily challenge**: 20 questions, one try per day, coins for every correct answer. Sparkles and coins on every answer, "go" sound, combo banners every 5 in a row, and a confetti finish (extra big for 20 of 20).
 - **Stats**: a times-table grid shows which questions you know and which to practise. Questions you
   get wrong come up more often. 15 achievements to collect.
 

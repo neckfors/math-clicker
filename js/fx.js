@@ -79,6 +79,7 @@ export const sfx = {
     [0, 2, 4, 7, 9, 12].forEach((n, i) => tone(523.25 * 2 ** (n / 12), 0.45 + i * 0.07, 0.35, 'triangle', 0.14));
     tone(2093, 0.9, 0.7, 'sine', 0.06);
   },
+  go() { [0, 4, 7, 12].forEach((n, i) => tone(392 * 2 ** (n / 12), i * 0.07, 0.18, 'square', 0.07)); noise(0, 0.25, 0.1, 4000, 600); },
   fanfare() {
     [523, 659, 784, 1047].forEach((f, i) => tone(f, i * 0.12, 0.3, 'square', 0.08));
     tone(1047, 0.48, 0.7, 'triangle', 0.18);

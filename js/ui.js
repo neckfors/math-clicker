@@ -44,6 +44,7 @@ function toast(text) {
 
 // ---- Answer input ----
 let entry = '';
+let dailyCombo = 0;
 let fb = null; // feedback after an answer: { ok, text, until }
 const fbActive = () => fb && Date.now() < fb.until;
 const locked = () => fbActive() && !fb.ok;
@@ -66,6 +67,7 @@ function submit() {
     FX.pop($('mathCard'));
     FX.buzz(15);
     if (wasBoss && !res.end) hitBoss();
+    if (wasQuiz && !wasBoss) dailyHit(res);
     if (res.reward) FX.coinBurst($('qEntry'), $('coins'), 4 + 2 * G.streakMult());
     if (!wasQuiz && G.streakMult() > multBefore) {
       FX.sfx.milestone();
@@ -73,6 +75,7 @@ function submit() {
     }
   } else {
     FX.sfx.wrong();
+    dailyCombo = 0;
     FX.shake($('mathCard'));
     FX.buzz([60, 40, 60]);
     if (wasBoss) bossLunge();
@@ -109,10 +112,23 @@ function askBoss() {
     [{ label: 'Start', fn: () => { G.startBoss(); entry = ''; fb = null; curBoss = s.stage; setView('play'); bossIntro(); } }, { label: 'Not yet' }]);
 }
 
+// Daily challenge: sparkles and a coin pop per answer, combo banners every 5 in a row.
+function dailyHit(res) {
+  dailyCombo++;
+  FX.sparkle($('mathCard'), 8 + Math.min(dailyCombo, 12));
+  FX.coinBurst($('qEntry'), $('quizTimer'), 3);
+  if (dailyCombo % 5 === 0) {
+    FX.sfx.milestone();
+    FX.flash('#ffd54a');
+    FX.banner(dailyCombo >= 20 ? '🏆 PERFECT!' : `🔥 ${dailyCombo} in a row!`);
+    FX.burst(innerWidth / 2, innerHeight / 3, ['🎉', '⭐', '✨', '🪙'], 24, 160, 26);
+  }
+}
+
 function askDaily() {
   showDialog('📅 Daily challenge',
     '20 questions, one try per day.\nEvery correct answer gives coins.',
-    [{ label: 'Start', fn: () => { G.startDaily(); entry = ''; fb = null; setView('play'); } }, { label: 'Not yet' }]);
+    [{ label: 'Start', fn: () => { G.startDaily(); entry = ''; fb = null; dailyCombo = 0; setView('play'); FX.sfx.go(); FX.banner('📅 Go go go!'); } }, { label: 'Not yet' }]);
 }
 
 function showWin() {
@@ -209,6 +225,10 @@ function finishQuiz(end) {
   else if (end.type === 'daily' || end.success) FX.sfx.fanfare();
   else FX.sfx.wrong();
   if (end.type === 'daily') {
+    const perfect = end.right === end.total;
+    if (perfect) { FX.sfx.win(); FX.flash('#ffd54a'); }
+    for (let i = 0; i < (perfect ? 4 : 1); i++) setTimeout(() => FX.burst(innerWidth / 2, innerHeight / 2, ['🎉', '⭐', '🪙', '✨', '🎊'], 30, 220, 28), i * 350);
+    FX.coinBurst($('quizPanel'), $('coins'), 10 + end.right);
     showDialog('📅 Daily challenge done',
       `${end.right} of ${end.total} correct in ${fmtTime(end.time)}.\nReward: +${fmt(end.reward)} 🪙`, [{ label: 'OK' }]);
   } else if (end.won) {
