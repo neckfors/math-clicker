@@ -3,6 +3,7 @@ import * as G from './game.js';
 import { STAGES, UPGRADES, ACHIEVEMENTS } from './data.js';
 import { getVersion } from './update.js';
 import * as FX from './fx.js';
+import { setSpeed } from './stars.js';
 
 const $ = id => document.getElementById(id);
 const s = G.s;
@@ -57,13 +58,14 @@ function press(k) {
 
 function submit() {
   if (!entry) return;
-  const wasQuiz = !!G.quiz, multBefore = G.streakMult();
+  const wasQuiz = !!G.quiz, wasBoss = !!G.quiz && G.quiz.type === 'boss', multBefore = G.streakMult();
   const res = G.answer(Number(entry));
   entry = '';
   if (res.ok) {
     FX.sfx.correct(wasQuiz ? (G.quiz ? G.quiz.done : 10) : s.streak);
     FX.pop($('mathCard'));
     FX.buzz(15);
+    if (wasBoss && !res.end) hitBoss();
     if (res.reward) FX.coinBurst($('qEntry'), $('coins'), 4 + 2 * G.streakMult());
     if (!wasQuiz && G.streakMult() > multBefore) {
       FX.sfx.milestone();
@@ -73,6 +75,7 @@ function submit() {
     FX.sfx.wrong();
     FX.shake($('mathCard'));
     FX.buzz([60, 40, 60]);
+    if (wasBoss) bossLunge();
   }
   fb = res.ok
     ? { ok: true, text: res.reward ? `+${fmt(res.reward)} 🪙` : 'Correct!', until: Date.now() + 700 }
@@ -101,9 +104,9 @@ function renderQuestion() {
 // ---- Quiz rounds ----
 function askBoss() {
   const st = STAGES[s.stage];
-  showDialog(`${st.icon} Boss round: ${st.name}`,
+  showDialog(`${st.boss.icon} Boss: ${st.boss.name}`,
     `Answer 10 questions in ${G.bossTime()} seconds.\nA wrong answer costs 3 seconds.\nThe part costs ${fmt(G.stageCost())} coins, only if you win.`,
-    [{ label: 'Start', fn: () => { G.startBoss(); entry = ''; fb = null; setView('play'); } }, { label: 'Not yet' }]);
+    [{ label: 'Start', fn: () => { G.startBoss(); entry = ''; fb = null; curBoss = s.stage; setView('play'); bossIntro(); } }, { label: 'Not yet' }]);
 }
 
 function askDaily() {
@@ -119,7 +122,89 @@ function showWin() {
     [{ label: 'Fly again', fn: () => { G.prestige(); entry = ''; } }]);
 }
 
+// ---- Boss fight effects ----
+let curBoss = 0, dying = false, hpShown = -1;
+const bossOf = () => STAGES[curBoss].boss;
+const cancelAnims = el => el.getAnimations().forEach(a => a.cancel());
+
+function bossIntro() {
+  const b = bossOf();
+  cancelAnims($('bface')); cancelAnims($('ship'));
+  $('ship').style.opacity = 1;
+  $('boss').style.transition = 'none';
+  $('boss').style.top = '14%';
+  void $('boss').offsetWidth;
+  $('boss').style.transition = '';
+  FX.sfx.roar();
+  FX.rumble($('app'), 500);
+  FX.banner(`⚠️ ${b.name}!`);
+  $('bface').animate([
+    { transform: 'translate(-50%, -50%) scale(0) rotate(-200deg)', opacity: 0 },
+    { transform: 'translate(-50%, -50%) scale(1.4) rotate(10deg)', opacity: 1, offset: 0.6 },
+    { transform: 'translate(-50%, -50%) scale(1) rotate(0)', opacity: 1 },
+  ], { duration: 800, easing: 'ease-out' });
+}
+
+function hitBoss() {
+  FX.sfx.laser();
+  FX.laser($('ship'), $('boss'), () => {
+    FX.sfx.hit();
+    FX.sparkle($('bface'), 8);
+    FX.buzz(25);
+    $('bface').animate([
+      { transform: 'translate(-50%, -50%) scale(1)', filter: 'brightness(4)' },
+      { transform: 'translate(-50%, -85%) scale(.85) rotate(-8deg)', filter: 'brightness(2)', offset: 0.4 },
+      { transform: 'translate(-50%, -50%) scale(1)', filter: 'brightness(1)' },
+    ], { duration: 320, easing: 'ease-out' });
+  });
+}
+
+function bossLunge() {
+  FX.shake($('arena'), 12);
+  $('bface').animate([
+    { transform: 'translate(-50%, -50%) scale(1)' },
+    { transform: 'translate(-50%, -20%) scale(1.5)', offset: 0.4 },
+    { transform: 'translate(-50%, -50%) scale(1)' },
+  ], { duration: 450, easing: 'ease-in-out' });
+}
+
+// The boss is blown up (win) or reaches the rocket (loss); the result dialog waits for the show.
+function bossEnd(end, after) {
+  dying = true;
+  const b = bossOf(), face = $('bface');
+  if (end.success) {
+    FX.sfx.boom();
+    FX.buzz([80, 30, 120, 30, 200]);
+    FX.flash('#fff');
+    FX.rumble($('app'), 900);
+    FX.explode(face, ['💥', '🔥', '✨', b.icon], 34);
+    setTimeout(() => FX.explode(face, ['💥', '⭐', '✨'], 22), 250);
+    face.animate([
+      { transform: 'translate(-50%, -50%) scale(1)', opacity: 1, filter: 'brightness(1)' },
+      { transform: 'translate(-50%, -50%) scale(1.5) rotate(20deg)', opacity: 1, filter: 'brightness(5)', offset: 0.25 },
+      { transform: 'translate(-50%, 250%) scale(0) rotate(540deg)', opacity: 0, filter: 'brightness(1)' },
+    ], { duration: 900, easing: 'ease-in', fill: 'both' });
+    FX.banner('💥 Defeated!');
+  } else {
+    $('boss').style.top = '70%';
+    FX.sfx.wrong();
+    setTimeout(() => {
+      FX.sfx.boom();
+      FX.flash('#ff6b6b');
+      FX.rumble($('app'), 600);
+      FX.explode($('ship'), ['💥', '🔥'], 16);
+      $('ship').style.opacity = 0;
+    }, 450);
+  }
+  setTimeout(() => { dying = false; hpShown = -1; after(); render(); }, end.success ? 1700 : 1400);
+}
+
 function onQuizEnd(end) {
+  if (end.type === 'boss') return bossEnd(end, () => finishQuiz(end));
+  finishQuiz(end);
+}
+
+function finishQuiz(end) {
   if (end.won) FX.sfx.win();
   else if (end.type === 'daily' || end.success) FX.sfx.fanfare();
   else FX.sfx.wrong();
@@ -130,7 +215,9 @@ function onQuizEnd(end) {
     showWin();
   } else if (end.success) {
     const next = STAGES[s.stage];
-    showDialog(`🎉 ${end.name} built!`, `Next part: ${next.icon} ${next.name}`, [{ label: 'Continue' }]);
+    const idx = s.stage - 1;
+    showDialog(`🎉 ${STAGES[idx].icon} ${end.name} built!`, `Next part: ${next.icon} ${next.name}`,
+      [{ label: 'Continue', fn: () => { render(); buildEffect(idx); } }]);
   } else {
     showDialog('⏱ Out of time!', 'You keep your coins.\nPractise a little and try again.', [{ label: 'OK' }]);
   }
@@ -235,19 +322,75 @@ function render() {
     $('buildBtn').hidden = !!z || s.coins < cost;
   }
 
-  $('rocket').hidden = $('tapHint').hidden = !!z;
+  const bossOn = (!!z && z.type === 'boss') || dying;
+  $('rocket').hidden = $('tapHint').hidden = $('slots').hidden = !!z || dying;
+  $('arena').hidden = !bossOn;
   $('quizPanel').hidden = !z;
-  $('tabs').hidden = !!z;
+  $('tabs').hidden = !!z || dying;
+  setSpeed(bossOn ? 4 : 1);
+  renderSlots();
+  if (bossOn) renderArena(z);
   if (z) {
     const boss = z.type === 'boss';
     $('quizTitle').textContent = `${boss ? 'Boss round' : 'Daily challenge'} · ${z.done} / ${z.total}`;
     $('quizTimer').textContent = boss ? '⏱ ' + Math.max(0, Math.ceil(z.timeLeft)) : '⏱ ' + fmtTime(z.elapsed);
     $('quizTimer').classList.toggle('low', boss && z.timeLeft <= 10);
   } else {
-    $('tapHint').textContent = s.stage ? STAGES.slice(0, s.stage).map(x => x.icon).join(' ') : 'Tap the rocket!';
+    $('tapHint').textContent = s.stage ? '' : 'Tap the rocket!';
   }
   renderQuestion();
   if (view === 'upgrades') renderUpgrades();
+}
+
+function renderSlots() {
+  const box = $('slots');
+  if (box.children.length !== STAGES.length) {
+    box.textContent = '';
+    STAGES.forEach(st => { const el = document.createElement('span'); el.textContent = st.icon; el.title = st.name; box.appendChild(el); });
+  }
+  [...box.children].forEach((el, i) => { el.className = i < s.stage || s.won ? 'on' : 'off'; });
+}
+
+// A part clicks into place: drops in, sparks fly, clank and chime.
+function buildEffect(idx) {
+  const el = $('slots').children[idx];
+  if (!el) return;
+  FX.sfx.build();
+  FX.buzz([30, 40, 30, 40, 90]);
+  el.animate([
+    { transform: 'translateY(-90px) scale(2.2) rotate(-30deg)', opacity: 0 },
+    { transform: 'translateY(0) scale(.8)', opacity: 1, offset: 0.45 },
+    { transform: 'translateY(-10px) scale(1.3)', offset: 0.7 },
+    { transform: 'translateY(0) scale(1)' },
+  ], { duration: 650, easing: 'ease-out' });
+  setTimeout(() => { FX.sparkle(el, 16); FX.flash('#ffffff40'); }, 300);
+  FX.banner(`${STAGES[idx].icon} ${STAGES[idx].name} installed!`);
+  setTimeout(() => FX.pop($('rocket'), 1.2), 450);
+}
+
+function renderArena(z) {
+  const b = bossOf(), idx = curBoss;
+  const face = $('bface'), boss = $('boss');
+  if (face.textContent !== b.icon) face.textContent = b.icon;
+  $('bossName').textContent = b.name.toUpperCase();
+  $('bossName').style.color = b.color;
+  const size = 54 + 9 * idx;
+  face.style.fontSize = size + 'px';
+  boss.style.setProperty('--c', b.color);
+  boss.style.setProperty('--glow', 6 + 3 * idx + 'px');
+  boss.style.setProperty('--ring', size * 1.5 + 'px');
+  boss.style.setProperty('--ring1', size * 1.5 + 'px');
+  boss.classList.toggle('r1', idx >= 2);
+  boss.classList.toggle('r2', idx >= 5);
+  if (!z) return; // fight is over: the effects drive the animation
+  const adv = Math.min(1, Math.max(0, 1 - z.timeLeft / z.maxTime));
+  boss.style.top = 14 + 50 * adv + '%';
+  boss.style.transform = `scale(${0.8 + 0.5 * adv})`;
+  $('arena').classList.toggle('danger', adv > 0.75);
+  if (hpShown !== z.done) {
+    hpShown = z.done;
+    $('hp').innerHTML = Array.from({ length: z.total }, (_, i) => `<i class="${i < z.total - z.done ? 'on' : ''}"></i>`).join('');
+  }
 }
 
 // ---- Events ----

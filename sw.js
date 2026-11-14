@@ -1,9 +1,9 @@
 // Bump VERSION on every release so players get the "New version available" bar.
-const VERSION = '1.1.0';
+const VERSION = '1.2.0';
 const CACHE = 'math-clicker-' + VERSION;
 const FILES = [
   './', 'index.html', 'style.css', 'manifest.json',
-  'js/data.js', 'js/game.js', 'js/ui.js', 'js/update.js', 'js/fx.js',
+  'js/data.js', 'js/game.js', 'js/ui.js', 'js/update.js', 'js/fx.js', 'js/stars.js',
   'icon-192.png', 'icon-512.png',
 ];
 

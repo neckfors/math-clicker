@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<canvas id="stars" aria-hidden="true"></canvas>
 <div id="updateBar" role="status" hidden>
   <span>New version available</span>
   <button id="updateBtn">Update</button>
@@ -37,7 +38,14 @@
       <div class="bar"><i id="goalBar"></i></div>
     </div>
     <div class="tap">
+      <div id="arena" class="arena" hidden>
+        <div id="bossName" class="bossname"></div>
+        <div id="hp" class="hp"></div>
+        <div id="boss" class="boss"><span id="bface"></span></div>
+        <div id="ship" class="ship">🚀</div>
+      </div>
       <button id="rocket" class="rocket" aria-label="Tap the rocket">🚀</button>
+      <div id="slots" class="slots"></div>
       <small id="tapHint"></small>
       <div id="quizPanel" class="quiz" hidden>
         <div id="quizTitle"></div>
@@ -79,6 +87,7 @@
     <button id="soundBtn" class="wide plain"></button>
     <h3>About</h3>
     <p class="sub">Math Clicker · version <span id="ver">…</span></p>
+    <p class="sub"><a href="https://paypal.me/neckfors" target="_blank" rel="noopener">♥ Support the author</a></p>
     <button id="restartBtn" class="wide danger">Restart this flight</button>
   </section>
 

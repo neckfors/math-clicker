@@ -1,13 +1,13 @@
 // Static game data: rocket stages, upgrades and achievements.
 
 export const STAGES = [
-  { name: 'Launch pad', icon: '🏗️', cost: 150 },
-  { name: 'Engine', icon: '🔩', cost: 800 },
-  { name: 'Fuel tank', icon: '⛽', cost: 4000 },
-  { name: 'Cabin', icon: '🪟', cost: 20000 },
-  { name: 'Wings', icon: '🪽', cost: 80000 },
-  { name: 'Booster', icon: '🔥', cost: 300000 },
-  { name: 'Nose cone', icon: '🔺', cost: 1000000 },
+  { name: 'Launch pad', icon: '🏗️', cost: 150, boss: { name: 'Space Worm', icon: '🐛', color: '#8bd450' } },
+  { name: 'Engine', icon: '🔩', cost: 800, boss: { name: 'Glitch Alien', icon: '👾', color: '#b06bff' } },
+  { name: 'Fuel tank', icon: '⛽', cost: 4000, boss: { name: 'Rogue Robot', icon: '🤖', color: '#6bc8ff' } },
+  { name: 'Cabin', icon: '🪟', cost: 20000, boss: { name: 'Void Ogre', icon: '👹', color: '#ff6b6b' } },
+  { name: 'Wings', icon: '🪽', cost: 80000, boss: { name: 'Kraken of the Void', icon: '🐙', color: '#ff7fd0' } },
+  { name: 'Booster', icon: '🔥', cost: 300000, boss: { name: 'Star Dragon', icon: '🐉', color: '#ff9a3c' } },
+  { name: 'Nose cone', icon: '🔺', cost: 1000000, boss: { name: 'The Moon Titan', icon: '👁️', color: '#ffe14a' } },
 ];
 
 // cost of next level = base * growth^level
@@ -19,7 +19,7 @@ export const UPGRADES = [
   { id: 'auto', icon: '🤖', name: 'Robot helper', base: 100, growth: 1.6,
     desc: 'Taps once per second for you, while there is fuel.' },
   { id: 'fuel', icon: '🛢️', name: 'Bigger fuel tank', base: 150, growth: 1.8,
-    desc: 'Correct answers give more robot fuel, and the tank holds more.' },
+    desc: 'A little more robot fuel per answer, and a bigger tank.' },
 ];
 
 // test(s, h): s = saved state, h = helpers from game.js
