@@ -337,6 +337,8 @@ function render() {
     tf.classList.toggle('low', s.fuel < 5);
     $('tankText').textContent = s.fuel > 0 ? `${Math.ceil(s.fuel)} / ${G.maxFuel()}s` : 'EMPTY';
     if (s.fuel > lastFuel + 0.5) { tf.classList.remove('fill'); void tf.offsetWidth; tf.classList.add('fill'); FX.sfx.refuel(); }
+    if (lastFuel >= 5 && s.fuel < 5 && s.fuel > 0) FX.sfx.low();
+    if (lastFuel > 0 && s.fuel <= 0) FX.sfx.empty();
     lastFuel = s.fuel;
   }
   const rb = $('robot'), working = !!s.levels.auto && s.fuel > 0 && !G.quiz && !s.won;
@@ -347,6 +349,8 @@ function render() {
     lastRobotCoin = Date.now();
     const r = rb.getBoundingClientRect();
     FX.burst(r.left + r.width / 2, r.top, ['🪙'], 1, 40, 20);
+    FX.pop($('rocket'), 1.08);
+    FX.sfx.tap();
   }
   $('streak').textContent = `🔥 ${s.streak} in a row`;
   $('mult').textContent = `bonus x${G.streakMult()}` + (s.stars ? ` · ⭐ ${s.stars}` : '');

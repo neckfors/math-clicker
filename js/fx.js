@@ -59,6 +59,8 @@ export const sfx = {
   },
   wrong() { tone(170, 0, 0.2, 'sawtooth', 0.1); tone(120, 0.13, 0.3, 'sawtooth', 0.1); },
   buy() { tone(988, 0, 0.08, 'square', 0.07); tone(1319, 0.07, 0.25, 'square', 0.07); },
+  low() { tone(880, 0, 0.1, 'square', 0.06); tone(880, 0.18, 0.1, 'square', 0.06); },
+  empty() { tone(440, 0, 0.18, 'square', 0.06, 330); tone(330, 0.2, 0.3, 'square', 0.06, 180); },
   // Liquid glugging into the tank: bubbly notes that rise.
   refuel() { for (let i = 0; i < 5; i++) tone(260 + i * 90 + Math.random() * 30, i * 0.07, 0.09, 'sine', 0.12, 420 + i * 120); noise(0, 0.4, 0.04, 900, 400); },
   coin() { const p = 1 + Math.random() * 0.15; tone(1568 * p, 0, 0.05, 'square', 0.035); tone(2093 * p, 0.04, 0.12, 'square', 0.035); },
