@@ -1,5 +1,6 @@
 // Game state and rules. No DOM code here.
 import { STAGES, UPGRADES, ACHIEVEMENTS } from './data.js';
+import { defaultCfg, fixCfg, pickQuestion, answerOf } from './mathset.js';
 
 const KEY = 'mathClicker.v1';
 
@@ -12,6 +13,7 @@ const runFields = () => ({
 const keepFields = () => ({
   stars: 0, bestTimes: {}, stats: {}, right: 0, wrong: 0, taps: 0,
   bestStreak: 0, bossPerfect: false, ach: [], daily: null, dailyBest: 0, sound: true,
+  cfg: defaultCfg(), addStats: {},
 });
 
 function load() {
@@ -23,6 +25,7 @@ function load() {
 }
 
 export const s = load();
+s.cfg = fixCfg(s.cfg);
 export const save = () => { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch { /* storage off */ } };
 
 // ---- Derived values ----
@@ -53,23 +56,14 @@ export function tableStats(n) {
 }
 
 // ---- Questions: tables answered wrong come up more often ----
-export let q = null;
-export function nextQuestion() {
-  const list = []; let total = 0;
-  for (const a of tables()) for (const b of tables()) {
-    if (q && q.a === a && q.b === b) continue;
-    const [r, w] = cell(a, b);
-    const weight = Math.min(8, Math.max(0.25, 1 + 2 * w - 0.25 * r));
-    list.push([a, b, weight]); total += weight;
-  }
-  let pick = Math.random() * total;
-  for (const [a, b, weight] of list) {
-    pick -= weight;
-    if (pick <= 0) { q = { a, b }; return; }
-  }
-  q = { a: list[0][0], b: list[0][1] };
-}
+export let q = null; // { op: 'x' | '+', a, b }
+const weightOf = (a, b) => { const [r, w] = cell(a, b); return Math.min(8, Math.max(0.25, 1 + 2 * w - 0.25 * r)); };
+export function nextQuestion() { q = pickQuestion(s.cfg, weightOf, q); }
 nextQuestion();
+
+// Called by the settings card after every change.
+export function setConfig() { Object.assign(s.cfg, fixCfg(s.cfg)); save(); nextQuestion(); }
+export const addStat = kind => s.addStats[kind] || [0, 0];
 
 // ---- Quiz rounds: boss (timed, 10 right answers) and daily (20 questions) ----
 export let quiz = null;
@@ -118,12 +112,13 @@ export function tap() {
 }
 
 export function answer(n) {
-  const { a, b } = q;
-  const ok = n === a * b;
-  const st = s.stats[`${a}x${b}`] ||= [0, 0];
+  const { op, a, b } = q;
+  const ans = answerOf(q);
+  const ok = n === ans;
+  const st = op === 'x' ? (s.stats[`${a}x${b}`] ||= [0, 0]) : (s.addStats[q.kind] ||= [0, 0]);
   st[ok ? 0 : 1]++;
   if (ok) s.right++; else s.wrong++;
-  const res = { ok, a, b, reward: 0, end: null };
+  const res = { ok, op, a, b, ans, reward: 0, end: null };
   if (quiz && quiz.type === 'boss') {
     if (ok) quiz.done++; else { quiz.mistakes++; quiz.timeLeft -= 3; }
     if (quiz.done >= quiz.total) res.end = endQuiz(true);

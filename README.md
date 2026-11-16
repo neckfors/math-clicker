@@ -1,7 +1,7 @@
 # Math Clicker
 
 A clicker game where multiplication is the fastest way to get rich. Tap the rocket for coins, solve
-times tables (2–9) for big bonuses, buy upgrades and build a rocket to the Moon.
+times tables or additions for big bonuses, buy upgrades and build a rocket to the Moon.
 
 ## How to play
 
@@ -22,7 +22,8 @@ times tables (2–9) for big bonuses, buy upgrades and build a rocket to the Moo
 - **Replay**: reaching the Moon gives a star. Each star makes coins worth more, the next rocket
   more expensive and boss rounds shorter. Best time is saved per star level.
 - **Daily challenge**: 20 questions, one try per day, coins for every correct answer. Sparkles and coins on every answer, "go" sound, combo banners every 5 in a row, and a confetti finish (extra big for 20 of 20).
-- **Stats**: a times-table grid shows which questions you know and which to practise. Questions you
+- **What to practise** (Stats → Settings): pick multiplication only, addition only, or both. Tables 0×–9× are switched on one by one. Additions can be 1+1 digit, 2+2 digits and/or 1+2 digits. In questions the × is orange and the + is cyan. The stats page shows the share right for each addition size.
+- **Stats**: a times-table grid (0–9) shows which questions you know and which to practise. Questions you
   get wrong come up more often. 15 achievements to collect.
 
 - **Sounds and effects**: a chime that climbs with your streak, flying coins, a bonus banner and
@@ -52,6 +53,7 @@ Then open http://localhost:8757.
 | --- | --- |
 | `index.html`, `style.css` | Page layout and looks |
 | `js/data.js` | Rocket stages, upgrades, achievements (tune prices here) |
+| `js/mathset.js`, `mathset.css` | Which questions to ask and the settings card (same copy in Type Blaster) |
 | `js/game.js` | Game rules and saving |
 | `js/ui.js` | Screens, input, game loop |
 | `js/fx.js` | Sounds, vibration, coins, explosions and other effects |

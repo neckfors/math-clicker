@@ -192,3 +192,9 @@ a { color: #ffd84a; }
 .robot.idle::after { content: '💤'; position: absolute; right: -14px; top: -10px; font-size: 18px; animation: tankpulse 1.6s infinite; }
 @keyframes robotwork { 0%, 100% { transform: translateX(0) rotate(-4deg); } 50% { transform: translateX(10px) rotate(6deg); } }
 @keyframes wrench { 0%, 100% { transform: rotate(-30deg); } 50% { transform: rotate(35deg); } }
+
+/* Addition share summary: 3 across */
+.summary.three { grid-template-columns: repeat(3, 1fr); }
+.summary.three div { font-size: 12px; padding: 8px 6px; }
+.q > span#qText i { font-style: normal; }
+@media (max-width: 340px) { .q { font-size: 24px; gap: 6px; } .entry { min-width: 64px; } .tabs button { font-size: 12px; } .coins { font-size: 22px; } }

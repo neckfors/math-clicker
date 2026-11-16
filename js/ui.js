@@ -4,6 +4,7 @@ import { STAGES, UPGRADES, ACHIEVEMENTS } from './data.js';
 import { getVersion } from './update.js';
 import * as FX from './fx.js';
 import { setSpeed } from './stars.js';
+import { SYM, MUL_NUMS, ADD_KINDS, renderSettings } from './mathset.js';
 
 const $ = id => document.getElementById(id);
 const s = G.s;
@@ -82,10 +83,12 @@ function submit() {
   }
   fb = res.ok
     ? { ok: true, text: res.reward ? `+${fmt(res.reward)} 🪙` + (s.levels.auto ? ` +${G.fuelPerAnswer()}s ⛽` : '') : 'Correct!', until: Date.now() + 700 }
-    : { ok: false, text: `${res.a} × ${res.b} = ${res.a * res.b}`, until: Date.now() + (wasQuiz ? 900 : 1500) };
+    : { ok: false, text: `${qHtml(res)} = ${res.ans}`, until: Date.now() + (wasQuiz ? 900 : 1500) };
   if (res.end) onQuizEnd(res.end);
   render();
 }
+
+const qHtml = q => `${q.a} <i class="${q.op === 'x' ? 'op-x' : 'op-add'}">${SYM[q.op]}</i> ${q.b}`;
 
 function renderQuestion() {
   const active = fbActive();
@@ -93,12 +96,12 @@ function renderQuestion() {
   card.classList.toggle('good', !!active && fb.ok);
   card.classList.toggle('bad', !!active && !fb.ok);
   if (active && !fb.ok) {
-    $('qText').textContent = fb.text;
+    $('qText').innerHTML = fb.text;
     $('qEntry').hidden = true;
     $('qReward').textContent = 'Remember it!';
     return;
   }
-  $('qText').textContent = `${G.q.a} × ${G.q.b} =`;
+  $('qText').innerHTML = `${qHtml(G.q)} =`;
   $('qEntry').hidden = false;
   $('qEntry').textContent = entry || '?';
   $('qReward').textContent = active ? fb.text : G.quiz ? '' : `+${fmt(G.mathReward(s.streak + 1))} 🪙` + (s.levels.auto ? ` +${G.fuelPerAnswer()}s ⛽` : '');
@@ -293,8 +296,8 @@ function renderStats() {
   ];
   $('summary').innerHTML = items.map(([k, v]) => `<div>${k}<b>${v}</b></div>`).join('');
 
-  const t = G.tables();
-  let html = '<table><tr><th>×</th>' + t.map(n => `<th>${n}</th>`).join('') + '</tr>';
+  const t = MUL_NUMS;
+  let html = '<table><tr><th class="op-x">×</th>' + t.map(n => `<th>${n}</th>`).join('') + '</tr>';
   for (const a of t) {
     html += `<tr><th>${a}</th>`;
     for (const b of t) {
@@ -305,6 +308,10 @@ function renderStats() {
     html += '</tr>';
   }
   $('grid').innerHTML = html + '</table>';
+  $('addStats').innerHTML = ADD_KINDS.map(k => {
+    const [r, w] = G.addStat(k.id), n = r + w;
+    return `<div>${k.ex.replace('+', '<i class="op-add">+</i>')}<b>${n ? Math.round(100 * r / n) + '%' : '–'}</b></div>`;
+  }).join('');
 
   const btn = $('dailyBtn');
   btn.disabled = !!G.dailyDone();
@@ -465,7 +472,8 @@ $('restartBtn').addEventListener('click', () => {
   showDialog('Restart this flight?', 'Coins, upgrades and rocket parts start over.\nStars, stats and achievements are kept.',
     [{ label: 'Cancel' }, { label: 'Restart', fn: () => { G.restartRun(); setView('play'); } }]);
 });
-const renderSound = () => { $('soundBtn').textContent = s.sound ? '🔊 Sound and vibration: on' : '🔇 Sound and vibration: off'; };
+renderSettings($('mathSet'), s.cfg, () => { G.setConfig(); entry = ''; fb = null; render(); });
+const renderSound =() => { $('soundBtn').textContent = s.sound ? '🔊 Sound and vibration: on' : '🔇 Sound and vibration: off'; };
 $('soundBtn').addEventListener('click', () => {
   s.sound = !s.sound;
   G.save();
