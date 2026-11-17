@@ -250,7 +250,7 @@ function finishQuiz(end) {
 let view = 'play';
 function setView(v) {
   view = v;
-  for (const name of ['play', 'upgrades', 'stats']) $('v-' + name).hidden = name !== v;
+  for (const name of ['play', 'upgrades', 'stats', 'settings']) $('v-' + name).hidden = name !== v;
   for (const b of $('tabs').children) b.classList.toggle('on', b.dataset.v === v);
   if (v === 'stats') renderStats();
   render();
@@ -375,6 +375,7 @@ function render() {
   $('arena').hidden = !bossOn;
   $('quizPanel').hidden = !z;
   $('tabs').hidden = !!z || dying;
+  fitTabs();
   setSpeed(bossOn ? 4 : 1);
   renderSlots();
   if (bossOn) renderArena(z);
@@ -465,7 +466,16 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'Backspace') press('del');
   else if (e.key === 'Enter') { e.preventDefault(); press('ok'); }
 });
-$('tabs').addEventListener('click', e => { if (e.target.dataset.v) setView(e.target.dataset.v); });
+$('tabs').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setView(b.dataset.v); });
+// Not enough room for all labels: keep text for Play only, icons for the rest
+function fitTabs() {
+  const t = $('tabs');
+  if (t.hidden) return;
+  t.classList.remove('compact');
+  if (t.scrollWidth > t.clientWidth) t.classList.add('compact');
+}
+addEventListener('resize', fitTabs);
+fitTabs();
 $('buildBtn').addEventListener('click', askBoss);
 $('dailyBtn').addEventListener('click', askDaily);
 $('restartBtn').addEventListener('click', () => {

@@ -22,12 +22,12 @@ times tables or additions for big bonuses, buy upgrades and build a rocket to th
 - **Replay**: reaching the Moon gives a star. Each star makes coins worth more, the next rocket
   more expensive and boss rounds shorter. Best time is saved per star level.
 - **Daily challenge**: 20 questions, one try per day, coins for every correct answer. Sparkles and coins on every answer, "go" sound, combo banners every 5 in a row, and a confetti finish (extra big for 20 of 20).
-- **What to practise** (Stats → Settings): pick multiplication only, addition only, or both. Tables 0×–9× are switched on one by one. Additions can be 1+1 digit, 2+2 digits and/or 1+2 digits. In questions the × is orange and the + is cyan. The stats page shows the share right for each addition size.
+- **What to practise** (the Settings tab): pick multiplication only, addition only, or both. Tables 0×–9× are switched on one by one. Additions can be 1+1 digit, 2+2 digits and/or 1+2 digits. In questions the × is orange and the + is cyan. The stats page shows the share right for each addition size.
 - **Stats**: a times-table grid (0–9) shows which questions you know and which to practise. Questions you
   get wrong come up more often. 15 achievements to collect.
 
 - **Sounds and effects**: a chime that climbs with your streak, flying coins, a bonus banner and
-  vibration. Turn them off under Stats → Settings.
+  vibration. Turn them off under the Settings tab.
 
 Progress is saved on the device.
 

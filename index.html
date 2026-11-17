@@ -81,6 +81,17 @@
     <div id="upList"></div>
   </section>
 
+  <section id="v-settings" class="view scroll" hidden>
+    <h3>Settings</h3>
+    <div id="mathSet"></div>
+    <button id="soundBtn" class="wide plain"></button>
+    <h3>About</h3>
+    <p class="sub">Math Clicker · version <span id="ver">…</span></p>
+    <p class="sub">Made by me and my son Ben 💙</p>
+    <p class="sub"><a href="https://paypal.me/neckfors" target="_blank" rel="noopener">♥ Support the author</a></p>
+    <button id="restartBtn" class="wide danger">Restart this flight</button>
+  </section>
+
   <section id="v-stats" class="view scroll" hidden>
     <h3>Daily challenge</h3>
     <button id="dailyBtn" class="wide"></button>
@@ -93,20 +104,13 @@
     <p class="sub">Green = you know it · Yellow = almost · Red = practise · Grey = not tried</p>
     <h3>Achievements <span id="achCount"></span></h3>
     <div id="achList"></div>
-    <h3>Settings</h3>
-    <div id="mathSet"></div>
-    <button id="soundBtn" class="wide plain"></button>
-    <h3>About</h3>
-    <p class="sub">Math Clicker · version <span id="ver">…</span></p>
-    <p class="sub">Made by me and my son Ben 💙</p>
-    <p class="sub"><a href="https://paypal.me/neckfors" target="_blank" rel="noopener">♥ Support the author</a></p>
-    <button id="restartBtn" class="wide danger">Restart this flight</button>
   </section>
 
   <nav class="tabs" id="tabs">
-    <button data-v="play" class="on">🚀 Play</button>
-    <button data-v="upgrades">⬆️ Upgrades</button>
-    <button data-v="stats">📊 Stats</button>
+    <button data-v="play" class="on" aria-label="Play">🚀<span class="lbl"> Play</span></button>
+    <button data-v="upgrades" aria-label="Upgrades">⬆️<span class="lbl"> Upgrades</span></button>
+    <button data-v="stats" aria-label="Stats">📊<span class="lbl"> Stats</span></button>
+    <button data-v="settings" aria-label="Settings">⚙️<span class="lbl"> Settings</span></button>
   </nav>
 </div>
 

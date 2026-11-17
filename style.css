@@ -118,6 +118,8 @@ a { color: #ffd84a; }
 /* Tabs */
 .tabs { display: flex; margin-top: 10px; background: #0b1030; padding-bottom: env(safe-area-inset-bottom); }
 .tabs button { flex: 1; background: none; padding: 12px 0; font-size: 13px; opacity: .6; border-top: 3px solid transparent; }
+.tabs button { white-space: nowrap; }
+.tabs.compact button:not([data-v=play]) .lbl { display: none; }
 .tabs .on { opacity: 1; border-top-color: #ffd84a; }
 
 /* Upgrades */
