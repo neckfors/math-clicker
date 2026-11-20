@@ -13,7 +13,7 @@ const runFields = () => ({
 const keepFields = () => ({
   stars: 0, bestTimes: {}, stats: {}, right: 0, wrong: 0, taps: 0,
   bestStreak: 0, bossPerfect: false, ach: [], daily: null, dailyBest: 0, sound: true,
-  cfg: defaultCfg(), addStats: {},
+  cfg: defaultCfg(), addStats: {}, hist: {}, // hist: last HIST tries (1 right / 0 wrong) per times-table fact
 });
 
 function load() {
@@ -56,10 +56,26 @@ export function tableStats(n) {
 }
 
 // ---- Questions: tables answered wrong come up more often ----
+// Each fact (7x8 and 8x7 are one fact) remembers its last HIST tries. 20 right in a row = fully green and asked least often;
+// every miss inside the window turns it towards red and makes it come back more often. Old misses fade out as you keep answering.
+export const HIST = 20;
+const fkey = (a, b) => (a < b ? `${a}x${b}` : `${b}x${a}`);
+export function factInfo(a, b) {
+  const h = s.hist[fkey(a, b)] || [], miss = h.filter(x => !x).length;
+  return { n: h.length, miss, r: miss / Math.max(h.length, 3) };
+}
+export function factColor(a, b) { // null = not tried yet
+  const { n, miss, r } = factInfo(a, b);
+  if (!n) return null;
+  const hue = miss ? 130 * (1 - Math.min(1, 1.6 * Math.sqrt(r))) : 95 + 35 * Math.min(1, n / HIST);
+  return `hsl(${Math.round(hue)} 65% 42%)`;
+}
 export let q = null; // { op: 'x' | '+', a, b }
-// Weight follows the share of wrong answers; the square root lifts facts you only miss sometimes
-// (perfect 0.6x, unseen 2x, 1 miss in 10 about 2.2x, always wrong 5.6x).
-const weightOf = (a, b) => { const [r, w] = cell(a, b), n = r + w; return n === 0 ? 2 : 0.6 + 5 * Math.sqrt(w / Math.max(n, 3)); };
+const weightOf = (a, b) => {
+  const { n, miss, r } = factInfo(a, b);
+  if (miss) return 0.6 + 5 * Math.sqrt(r);   // 1 miss in 20 ~1.7x, 1 in 10 ~2.2x, always wrong ~5.6x
+  return 2 - 1.4 * Math.min(1, n / HIST);    // unseen 2x, down to 0.6x after 20 clean tries
+};
 export function nextQuestion() { q = pickQuestion(s.cfg, weightOf, q); }
 nextQuestion();
 
@@ -119,6 +135,7 @@ export function answer(n) {
   const ok = n === ans;
   const st = op === 'x' ? (s.stats[`${a}x${b}`] ||= [0, 0]) : (s.addStats[q.kind] ||= [0, 0]);
   st[ok ? 0 : 1]++;
+  if (op === 'x') { const h = (s.hist[fkey(a, b)] ||= []); h.push(ok ? 1 : 0); if (h.length > HIST) h.shift(); }
   if (ok) s.right++; else s.wrong++;
   const res = { ok, op, a, b, ans, reward: 0, end: null };
   if (quiz && quiz.type === 'boss') {

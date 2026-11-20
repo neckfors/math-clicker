@@ -301,9 +301,8 @@ function renderStats() {
   for (const a of t) {
     html += `<tr><th>${a}</th>`;
     for (const b of t) {
-      const [r, w] = G.cell(a, b), n = r + w;
-      const cls = !n ? '' : r / n >= 0.9 ? 'g' : r / n >= 0.6 ? 'y' : 'r';
-      html += `<td class="${cls}" title="${a} × ${b}: ${r} right, ${w} wrong"></td>`;
+      const c = G.factColor(a, b), { n, miss } = G.factInfo(a, b);
+      html += `<td${c ? ` style="background:${c}"` : ''} title="${a} × ${b}: ${n ? `${n - miss} of last ${n} right` : 'not tried'}"></td>`;
     }
     html += '</tr>';
   }
