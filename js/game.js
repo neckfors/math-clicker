@@ -57,7 +57,9 @@ export function tableStats(n) {
 
 // ---- Questions: tables answered wrong come up more often ----
 export let q = null; // { op: 'x' | '+', a, b }
-const weightOf = (a, b) => { const [r, w] = cell(a, b); return Math.min(8, Math.max(0.25, 1 + 2 * w - 0.25 * r)); };
+// Weight follows the share of wrong answers; the square root lifts facts you only miss sometimes
+// (perfect 0.6x, unseen 2x, 1 miss in 10 about 2.2x, always wrong 5.6x).
+const weightOf = (a, b) => { const [r, w] = cell(a, b), n = r + w; return n === 0 ? 2 : 0.6 + 5 * Math.sqrt(w / Math.max(n, 3)); };
 export function nextQuestion() { q = pickQuestion(s.cfg, weightOf, q); }
 nextQuestion();
 
